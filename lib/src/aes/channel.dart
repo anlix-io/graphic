@@ -124,7 +124,7 @@ class DiscreteChannelConv<AV> extends ChannelConv<int, AV> {
   final List<AV> values;
 
   @override
-  AV convert(int input) => values[input];
+  AV convert(int input) => values[input % values.length];
 }
 
 /// The encoder for channel attributes whose [ChannelAttr.variable] is set.
