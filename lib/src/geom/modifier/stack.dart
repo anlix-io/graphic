@@ -29,10 +29,21 @@ class StackGeomModifier extends GeomModifier {
   void modify(AesGroups value) {
     for (var i = 1; i < value.length; i++) {
       final group = value[i];
-      final preGroup = value[i - 1];
+      
       for (var j = 0; j < group.length; j++) {
         final position = group[j].position;
-        final prePosition = preGroup[j].position;
+        
+        List<Offset> prePosition = [];
+        
+        for( var k = i-1 ; k>=0 && prePosition.length==0 ; k-- ){
+          List<Aes> possiblyPreGroup = value[k];
+          for( Aes aes in possiblyPreGroup ){
+            if( aes.position[0].dx == position[0].dx ){
+              prePosition = aes.position;
+              break;
+            }
+          }
+        }
 
         var preTop = normalZero;
         for (var point in prePosition) {
