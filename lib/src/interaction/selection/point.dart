@@ -1,6 +1,8 @@
+import 'dart:math';
 import 'package:graphic/src/common/dim.dart';
 import 'package:graphic/src/coord/coord.dart';
 import 'package:graphic/src/dataflow/tuple.dart';
+import 'package:graphic/graphic.dart';
 import 'dart:ui';
 
 import 'package:graphic/src/interaction/gesture.dart';
@@ -14,6 +16,7 @@ class PointSelection extends Selection {
     this.toggle,
     this.nearest,
     this.testRadius,
+    this.bothDimTest=false,
     Dim? dim,
     String? variable,
     Set<GestureType>? on,
@@ -46,6 +49,14 @@ class PointSelection extends Selection {
   /// If null, a default 10 is set.
   double? testRadius;
 
+  //
+  // If [bothDimTest] is true, will try to test when pointer is inside
+  // both dimensions. [dim] field still would be useful aggregating tuples
+  // on a selection. 
+  //
+  bool bothDimTest = false;
+
+
   @override
   bool operator ==(Object other) =>
       other is PointSelection &&
@@ -63,6 +74,7 @@ class PointSelector extends Selector {
     this.toggle,
     this.nearest,
     this.testRadius,
+    this.bothDimTest,
     Dim? dim,
     String? variable,
     List<Offset> points,
@@ -78,6 +90,8 @@ class PointSelector extends Selector {
   final bool nearest;
 
   final double testRadius;
+
+  final bool bothDimTest;
 
   @override
   Set<int>? select(
@@ -102,13 +116,30 @@ class PointSelector extends Selector {
           nearestDistance = distance;
         }
       };
+    } else if ( bothDimTest ){
+      updateNearest = (aes) {
+        // bothDimTest only works with 2-point aes for now
+        // it checks if point is between both aes's points
+        // it allows a minor error margin (epsilon)
+        if( aes.position.length == 2 ){
+          Offset p1 = aes.position[0];
+          Offset p2 = aes.position[1];
+          double epsilon = 0.01;
+          if( min( p1.dx , p2.dx)-epsilon < point.dx && max( p1.dx , p2.dx)+epsilon > point.dx ){
+            if( min( p1.dy , p2.dy)-epsilon < point.dy && max( p1.dy , p2.dy)+epsilon > point.dy ){
+              nearestIndex = aes.index;
+              nearestDistance = 0;
+            }
+          }
+        }
+      };
     } else {
-      final getProjection = dim == Dim.x
+      final getProjection = (dim==Dim.x)
           ? (Offset offset) => offset.dx
           : (Offset offset) => offset.dy;
       updateNearest = (aes) {
         final p = aes.representPoint;
-        final distance = (getProjection(point) - getProjection(p)).abs();
+        final distance =  getProjection(point) - getProjection(p);
         if (distance < nearestDistance) {
           nearestIndex = aes.index;
           nearestDistance = distance;
