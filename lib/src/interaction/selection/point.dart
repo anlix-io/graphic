@@ -124,9 +124,9 @@ class PointSelector extends Selector {
         if( aes.position.length == 2 ){
           Offset p1 = aes.position[0];
           Offset p2 = aes.position[1];
-          double epsilon = 0.01;
+          double epsilon = (aes.size!=null) ? (aes.size!/2) : 0.1 ;
           if( min( p1.dx , p2.dx)-epsilon < point.dx && max( p1.dx , p2.dx)+epsilon > point.dx ){
-            if( min( p1.dy , p2.dy)-epsilon < point.dy && max( p1.dy , p2.dy)+epsilon > point.dy ){
+            if( min( p1.dy , p2.dy) < point.dy && max( p1.dy , p2.dy) > point.dy ){
               nearestIndex = aes.index;
               nearestDistance = 0;
             }
