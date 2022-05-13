@@ -45,28 +45,28 @@ class Aes {
 
   /// Position points of the tuple.
   ///
-  /// The count of points is determined by the geometory element type. The values
+  /// The count of points is determined by the geometry element type. The values
   /// of each point dimension is scaled and normalized value of `[0, 1]`. the position
   /// points can be converted to canvas points by [CoordConv].
   List<Offset> position;
 
   /// The shape of the tuple.
-  final Shape shape;
+  Shape shape;
 
   /// The color of the tuple.
-  final Color? color;
+  Color? color;
 
   /// The gradient of the tuple.
-  final Gradient? gradient;
+  Gradient? gradient;
 
   /// The shadow elevation of the tuple.
-  final double? elevation;
+  double? elevation;
 
   /// The label of the tuple.
-  final Label? label;
+  Label? label;
 
   /// The size of the tuple.
-  final double? size;
+  double? size;
 
   /// The represent point of [position] points.
   Offset get representPoint => shape.representPoint(position);

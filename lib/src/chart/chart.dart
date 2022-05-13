@@ -38,6 +38,7 @@ import 'view.dart';
 class Chart<D> extends StatefulWidget {
   /// Creates a chart widget.
   Chart({
+    Key? key,
     required this.data,
     this.changeData,
     required this.variables,
@@ -54,7 +55,7 @@ class Chart<D> extends StatefulWidget {
     this.gestureChannel,
     this.resizeChannel,
     this.changeDataChannel,
-  });
+  }) : super(key: key);
 
   /// The data list to visualize.
   final List<D> data;
@@ -67,7 +68,7 @@ class Chart<D> extends StatefulWidget {
   /// Specifications of transforms applied to variable data.
   final List<VariableTransform>? transforms;
 
-  /// Specifications of geometory elements.
+  /// Specifications of geometry elements.
   final List<GeomElement> elements;
 
   /// Specification of the coordinate.
@@ -221,10 +222,20 @@ class _ChartState<D> extends State<Chart<D>> {
   void initState() {
     super.initState();
 
+    // The mouse enter and exit implementation is the same as Flutter's tooltip:
+    // https://github.com/flutter/flutter/blob/master/packages/flutter/lib/src/material/tooltip.dart#L354
     _mouseIsConnected = RendererBinding.instance!.mouseTracker.mouseIsConnected;
 
     RendererBinding.instance!.mouseTracker
         .addListener(_handleMouseTrackerChange);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    RendererBinding.instance!.mouseTracker
+        .removeListener(_handleMouseTrackerChange);
   }
 
   /// Asks the chart state to trigger a repaint.

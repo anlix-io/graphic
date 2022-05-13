@@ -125,12 +125,12 @@ export 'src/variable/transform/map.dart' show MapTrans;
 export 'src/variable/transform/proportion.dart' show Proportion;
 export 'src/variable/transform/sort.dart' show Sort;
 
-export 'src/scale/scale.dart' show Scale;
-export 'src/scale/discrete.dart' show DiscreteScale;
-export 'src/scale/continuous.dart' show ContinuousScale;
-export 'src/scale/linear.dart' show LinearScale;
-export 'src/scale/ordinal.dart' show OrdinalScale;
-export 'src/scale/time.dart' show TimeScale;
+export 'src/scale/scale.dart' show Scale, ScaleConv;
+export 'src/scale/discrete.dart' show DiscreteScale, DiscreteScaleConv;
+export 'src/scale/continuous.dart' show ContinuousScale, ContinuousScaleConv;
+export 'src/scale/linear.dart' show LinearScale, LinearScaleConv;
+export 'src/scale/ordinal.dart' show OrdinalScale, OrdinalScaleConv;
+export 'src/scale/time.dart' show TimeScale, TimeScaleConv;
 
 export 'src/geom/element.dart' show GeomElement;
 export 'src/geom/function.dart' show FunctionElement;
@@ -162,7 +162,7 @@ export 'src/shape/shape.dart' show Shape;
 export 'src/shape/function.dart' show FunctionShape;
 export 'src/shape/partition.dart' show PartitionShape;
 export 'src/shape/area.dart' show AreaShape, BasicAreaShape;
-export 'src/shape/custom.dart' show CustomShape, CandlestickShape;
+export 'src/shape/custom.dart' show CandlestickShape;
 export 'src/shape/interval.dart' show IntervalShape, RectShape, FunnelShape;
 export 'src/shape/line.dart' show LineShape, BasicLineShape;
 export 'src/shape/point.dart' show PointShape, CircleShape, SquareShape;
@@ -201,7 +201,7 @@ export 'src/common/label.dart'
 export 'src/common/defaults.dart' show Defaults;
 export 'src/common/dim.dart' show Dim;
 
-export 'src/dataflow/tuple.dart' show Tuple, Aes;
+export 'src/dataflow/tuple.dart' show Tuple, Aes, AesGroups;
 
 export 'src/util/path.dart' show Paths;
 export 'package:path_drawing/path_drawing.dart' show DashOffset;

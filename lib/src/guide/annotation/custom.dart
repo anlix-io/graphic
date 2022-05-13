@@ -13,16 +13,18 @@ class CustomAnnotation extends FigureAnnotation {
     List<String>? variables,
     List? values,
     Offset Function(Size)? anchor,
+    bool? clip,
     int? layer,
   }) : super(
           variables: variables,
           values: values,
           anchor: anchor,
+          clip: clip,
           layer: layer,
         );
 
   /// Indicates the custom render funcion of this annotation.
-  List<Figure> Function(Offset) renderer;
+  List<Figure> Function(Offset, Size) renderer;
 
   @override
   bool operator ==(Object other) => other is CustomAnnotation && super == other;
@@ -35,8 +37,9 @@ class CustomAnnotOp extends FigureAnnotOp {
   @override
   List<Figure>? evaluate() {
     final anchor = params['anchor'] as Offset;
-    final renderer = params['renderer'] as List<Figure> Function(Offset);
+    final size = params['size'] as Size;
+    final renderer = params['renderer'] as List<Figure> Function(Offset, Size);
 
-    return renderer(anchor);
+    return renderer(anchor, size);
   }
 }

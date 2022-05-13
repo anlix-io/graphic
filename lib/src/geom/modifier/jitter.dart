@@ -1,10 +1,11 @@
-import 'dart:ui';
 import 'dart:math';
+import 'dart:ui';
 
+import 'package:graphic/src/algebra/varset.dart';
+import 'package:graphic/src/coord/coord.dart';
 import 'package:graphic/src/dataflow/tuple.dart';
 import 'package:graphic/src/scale/discrete.dart';
 import 'package:graphic/src/scale/scale.dart';
-import 'package:graphic/src/algebra/varset.dart';
 
 import 'modifier.dart';
 
@@ -18,34 +19,25 @@ class JitterModifier extends Modifier {
     this.ratio,
   });
 
-  /// Ratio of the local neighborhood to the descrete band for each group.
+  /// Ratio of the local neighborhood to the discrete band for each group.
   ///
   /// If null, a default 0.5 is set.
   double? ratio;
 
   @override
-  bool operator ==(Object other) =>
-      other is JitterModifier && super == other && ratio == other.ratio;
-}
-
-/// The jitter geometory modifier.
-class JitterGeomModifier extends GeomModifier {
-  JitterGeomModifier(
-    this.ratio,
-    this.band,
-  );
-
-  /// Ratio of the local neighborhood to the descrete band for each group.
-  final double ratio;
-
-  /// The band ratio of each value.
-  final double band;
+  bool equalTo(Object other) => other is JitterModifier && ratio == other.ratio;
 
   @override
-  void modify(AesGroups value) {
+  void modify(AesGroups groups, Map<String, ScaleConv<dynamic, num>> scales,
+      AlgForm form, CoordConv coord, Offset origin) {
+    final xField = form.first[0];
+    final band = (scales[xField] as DiscreteScaleConv).band;
+
+    final ratio = this.ratio ?? 0.5;
+
     final random = Random();
 
-    for (var group in value) {
+    for (var group in groups) {
       for (var aes in group) {
         final oldPosition = aes.position;
         final bias = ratio * band * (random.nextDouble() - 0.5);
@@ -56,22 +48,5 @@ class JitterGeomModifier extends GeomModifier {
             .toList();
       }
     }
-  }
-}
-
-/// The jitter geometory modifier operator.
-class JitterGeomModifierOp extends GeomModifierOp<JitterGeomModifier> {
-  JitterGeomModifierOp(Map<String, dynamic> params) : super(params);
-
-  @override
-  JitterGeomModifier evaluate() {
-    final ratio = params['ratio'] as double;
-    final form = params['form'] as AlgForm;
-    final scales = params['scales'] as Map<String, ScaleConv>;
-
-    final xField = form.first[0];
-    final band = (scales[xField] as DiscreteScaleConv).band;
-
-    return JitterGeomModifier(ratio, band);
   }
 }

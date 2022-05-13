@@ -26,11 +26,7 @@ import 'package:graphic/src/coord/rect.dart';
 import 'package:graphic/src/data/data_set.dart';
 import 'package:graphic/src/dataflow/operator.dart';
 import 'package:graphic/src/geom/element.dart';
-import 'package:graphic/src/geom/modifier/dodge.dart';
-import 'package:graphic/src/geom/modifier/jitter.dart';
 import 'package:graphic/src/geom/modifier/modifier.dart';
-import 'package:graphic/src/geom/modifier/stack.dart';
-import 'package:graphic/src/geom/modifier/symmetric.dart';
 import 'package:graphic/src/guide/annotation/custom.dart';
 import 'package:graphic/src/guide/annotation/figure.dart';
 import 'package:graphic/src/guide/annotation/line.dart';
@@ -431,35 +427,13 @@ void parse<D>(
 
     if (elementSpec.modifiers != null) {
       for (var modifier in elementSpec.modifiers!) {
-        GeomModifierOp geomModifier;
-        if (modifier is DodgeModifier) {
-          geomModifier = view.add(DodgeGeomModifierOp({
-            'ratio': modifier.ratio,
-            'symmetric': modifier.symmetric ?? true,
-            'form': form,
-            'scales': scales,
-            'groups': groups,
-          }));
-        } else if (modifier is JitterModifier) {
-          geomModifier = view.add(JitterGeomModifierOp({
-            'ratio': modifier.ratio ?? 0.5,
-            'form': form,
-            'scales': scales,
-          }));
-        } else if (modifier is StackModifier) {
-          geomModifier = view.add(StackGeomModifierOp({
-            'origin': origin,
-          }));
-        } else if (modifier is SymmetricModifier) {
-          geomModifier = view.add(SymmetricGeomModifierOp({
-            'origin': origin,
-          }));
-        } else {
-          throw UnimplementedError('No such modifier type: $modifier.');
-        }
         groups = view.add(ModifyOp({
+          'modifier': modifier,
           'groups': groups,
-          'modifier': geomModifier,
+          'scales': scales,
+          'form': form,
+          'coord': coord,
+          'origin': origin,
         }));
       }
     }
@@ -634,6 +608,7 @@ void parse<D>(
           annotSpec as CustomAnnotation;
           annot = view.add(CustomAnnotOp({
             'anchor': anchor,
+            'size': size,
             'renderer': annotSpec.renderer,
           }));
         }
@@ -642,6 +617,8 @@ void parse<D>(
             view.graffiti.add(FigureAnnotScene(annotSpec.layer ?? 0));
         view.add(FigureAnnotRenderOp({
           'figures': annot,
+          'clip': annotSpec.clip ?? false,
+          'coord': coord,
         }, annotScene, view));
       } else {
         throw UnimplementedError('No such annotation type $annotSpec.');

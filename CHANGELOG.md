@@ -1,3 +1,52 @@
+## 0.10.3
+
+**2022-05-2**
+
+- Fix Stack Overflow when comparing modifiers: https://github.com/entronad/graphic/pull/96
+
+## 0.10.2
+
+**2022-05-2**
+
+- Add `coordConv` to `Modifier.modify`'s arguments.
+
+## 0.10.1
+
+**2022-04-28**
+
+- Add `clip` for `FigureAnnotation`s: https://github.com/entronad/graphic/issues/93
+- Export modifier argument classes.
+
+## 0.10.0
+
+**2022-04-28**
+
+- Add tuple indexes in tooltip renderer: https://github.com/entronad/graphic/pull/80
+- Make modifier customizable: https://github.com/entronad/graphic/pull/88
+- Remove `CustomShape`. Custom shapes directly extend `Shape`.
+
+## 0.9.4
+
+**2022-04-20**
+
+- Fix dodge modifier: https://github.com/entronad/graphic/pull/86
+
+## 0.9.3
+
+**2022-04-19**
+
+- Fix: add key to Chart StatefulWidget: https://github.com/entronad/graphic/pull/75
+- Fix: add dispose to Chart.dart: https://github.com/entronad/graphic/pull/79
+- Add size argument to custom annotation renderer method for responsiveness: https://github.com/entronad/graphic/pull/82
+- Fix Sector corner radius bug: https://github.com/entronad/graphic/issues/58
+
+## 0.9.2
+
+**2022-04-05**
+
+- Remove tooltip on exit chart area: https://github.com/entronad/graphic/pull/63
+- Handle NaN in Point shape: https://github.com/entronad/graphic/pull/70
+
 ## 0.9.1
 
 **2022-02-21**

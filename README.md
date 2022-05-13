@@ -6,7 +6,7 @@
 </a>
 </p>
 
-Graphic is a declarative, interactive grammar of data visualization. It provides a Flutter charting library.
+Graphic is a grammar of data visualization and Flutter charting library.
 
 - **A Grammar of Graphics**: Graphic derives from Leland Wilkinson's book *The Grammar of Graphics*, and tries to balance between theoretical beauty and practicability. It inherits most concepts, like the graphic algebra.
 - **Declarative and Reactive**: As is encouraged in Flutter, the chart widget of Graphic is declarative and reactive. The grammar of data visualization is implemented by a declarative specification and the chart will reevaluate automatically on widget update.
@@ -29,6 +29,12 @@ Example of charts can be seen in the [Example App](https://github.com/entronad/g
 
 ![examples](https://github.com/entronad/graphic/raw/main/devdoc/examples.jpg)
 
+## Used by
+
+Graphic is used by these companies:
+
+[![rows](https://github.com/entronad/graphic/raw/main/devdoc/logo_rows.svg)](https://rows.com/)
+
 ## Tutorials
 
 [The Versatility of the Grammar of Graphics](https://medium.com/@entronad/the-versatility-of-the-grammar-of-graphics-d1366760424d)
@@ -48,4 +54,3 @@ Graphic is [MIT License](https://github.com/entronad/graphic/blob/main/LICENSE).
 [Medium](https://medium.com/@entronad)
 
 [Zhihu](https://www.zhihu.com/people/entronad)
-

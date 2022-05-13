@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:graphic/graphic.dart';
 
@@ -50,14 +52,15 @@ class TriangleShape extends IntervalShape {
 
 List<Figure> simpleTooltip(
   Offset anchor,
-  List<Tuple> selectedTuples,
+  Map<int, Tuple> selectedTuples,
 ) {
   List<Figure> figures;
 
   String textContent = '';
-  final fields = selectedTuples.first.keys.toList();
+  final selectedTupleList = selectedTuples.values;
+  final fields = selectedTupleList.first.keys.toList();
   if (selectedTuples.length == 1) {
-    final original = selectedTuples.single;
+    final original = selectedTupleList.single;
     var field = fields.first;
     textContent += '$field: ${original[field]}';
     for (var i = 1; i < fields.length; i++) {
@@ -65,7 +68,7 @@ List<Figure> simpleTooltip(
       textContent += '\n$field: ${original[field]}';
     }
   } else {
-    for (var original in selectedTuples) {
+    for (var original in selectedTupleList) {
       final domainField = fields.first;
       final measureField = fields.last;
       textContent += '\n${original[domainField]}: ${original[measureField]}';
@@ -129,9 +132,9 @@ List<Figure> simpleTooltip(
 
 List<Figure> centralPieLabel(
   Offset anchor,
-  List<Tuple> selectedTuples,
+  Map<int, Tuple> selectedTuples,
 ) {
-  final tuple = selectedTuples.last;
+  final tuple = selectedTuples.values.last;
 
   final titleSpan = TextSpan(
     text: tuple['genre'].toString() + '\n',
@@ -408,7 +411,7 @@ class PolygonCustomPage extends StatelessWidget {
               ),
               Container(
                 child: const Text(
-                  '- A custom shape attribution should corresponds to the geometory elemnet type.',
+                  '- A custom shape attribution should corresponds to the geometry elemnet type.',
                 ),
                 padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
                 alignment: Alignment.centerLeft,
@@ -543,7 +546,7 @@ class PolygonCustomPage extends StatelessWidget {
                     )
                   ],
                   axes: [
-                    Defaults.horizontalAxis,
+                    Defaults.horizontalAxis..tickLine = TickLine(),
                     Defaults.verticalAxis,
                   ],
                   selections: {
@@ -634,6 +637,54 @@ class PolygonCustomPage extends StatelessWidget {
                       ),
                       anchor: (size) => Offset(34 + size.width / 5 * 4, 290),
                     ),
+                  ],
+                ),
+              ),
+              Container(
+                child: const Text(
+                  'Custom Modifier',
+                  style: TextStyle(fontSize: 20),
+                ),
+                padding: const EdgeInsets.fromLTRB(20, 40, 20, 5),
+              ),
+              Container(
+                child: const Text(
+                  '- With dodge and size modifier that scales the interval element width to fit within its band',
+                ),
+                padding: const EdgeInsets.fromLTRB(10, 5, 10, 0),
+                alignment: Alignment.centerLeft,
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 10),
+                width: 350,
+                height: 300,
+                child: Chart(
+                  padding: (_) => const EdgeInsets.fromLTRB(40, 5, 10, 40),
+                  data: adjustData,
+                  variables: {
+                    'index': Variable(
+                      accessor: (Map map) => map['index'].toString(),
+                    ),
+                    'type': Variable(
+                      accessor: (Map map) => map['type'] as String,
+                    ),
+                    'value': Variable(
+                      accessor: (Map map) => map['value'] as num,
+                    ),
+                  },
+                  elements: [
+                    IntervalElement(
+                      position:
+                          Varset('index') * Varset('value') / Varset('type'),
+                      color: ColorAttr(
+                          variable: 'type', values: Defaults.colors10),
+                      size: SizeAttr(value: 2),
+                      modifiers: [DodgeSizeModifier()],
+                    )
+                  ],
+                  axes: [
+                    Defaults.horizontalAxis..tickLine = TickLine(),
+                    Defaults.verticalAxis,
                   ],
                 ),
               ),
@@ -731,5 +782,59 @@ class PolygonCustomPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+const _kBaseGroupPaddingHorizontal = 32.0;
+const _kMinBarSize = 4.0;
+
+/// Changes the position of elements while also updating their width to match
+/// the number of elements in a single band. Useful for bar charts when the
+/// width of the bars can be dynamic.
+@immutable
+class DodgeSizeModifier extends Modifier {
+  @override
+  void modify(AesGroups groups, Map<String, ScaleConv<dynamic, num>> scales,
+      AlgForm form, CoordConv coord, Offset origin) {
+    final xField = form.first[0];
+    final band = (scales[xField]! as DiscreteScaleConv).band;
+
+    final ratio = 1 / groups.length;
+    final numGroups = groups.length;
+    final groupHorizontalPadding = _kBaseGroupPaddingHorizontal / numGroups;
+    final invertedGroupPaddingHorizontal =
+        coord.invertDistance(groupHorizontalPadding, Dim.x);
+
+    final effectiveBand = band - 2 * invertedGroupPaddingHorizontal;
+
+    final maxWidth = coord.convert(const Offset(1, 0)).dx;
+    final maxWidthInBand = effectiveBand * maxWidth;
+    final maxWidthPerAes = maxWidthInBand / numGroups;
+    final barHorizontalPadding = groupHorizontalPadding / 2;
+    final size = max(maxWidthPerAes - barHorizontalPadding, _kMinBarSize);
+
+    final bias = ratio * effectiveBand;
+
+    // Negatively shift half of the total bias.
+    var accumulated = -bias * (numGroups + 1) / 2;
+
+    for (final group in groups) {
+      for (final aes in group) {
+        final oldPosition = aes.position;
+        aes.position = oldPosition
+            .map(
+              (point) => Offset(point.dx + accumulated + bias, point.dy),
+            )
+            .toList();
+
+        aes.size = size;
+      }
+      accumulated += bias;
+    }
+  }
+
+  @override
+  bool equalTo(Object other) {
+    return super == other;
   }
 }

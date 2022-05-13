@@ -1,6 +1,9 @@
 import 'dart:ui';
 
+import 'package:graphic/src/algebra/varset.dart';
+import 'package:graphic/src/coord/coord.dart';
 import 'package:graphic/src/dataflow/tuple.dart';
+import 'package:graphic/src/scale/scale.dart';
 
 import 'modifier.dart';
 
@@ -15,28 +18,21 @@ import 'modifier.dart';
 /// - Y values must be all positive or all negtive.
 class StackModifier extends Modifier {
   @override
-  bool operator ==(Object other) => other is StackModifier && super == other;
-}
+  bool equalTo(Object other) => other is StackModifier;
 
-/// The stack geometory modifier.
-class StackGeomModifier extends GeomModifier {
-  StackGeomModifier(this.normalZero);
+  void modify(AesGroups groups, Map<String, ScaleConv<dynamic, num>> scales,
+      AlgForm form, CoordConv coord, Offset origin) {
+    final normalZero = origin.dy;
 
-  /// The normal value of the stacked variable's zero.
-  final double normalZero;
-
-  @override
-  void modify(AesGroups value) {
-    for (var i = 1; i < value.length; i++) {
-      final group = value[i];
-      
+    for (var i = 1; i < groups.length; i++) {
+      final group = groups[i];
       for (var j = 0; j < group.length; j++) {
         final position = group[j].position;
         
         List<Offset> prePosition = [];
         
         for( var k = i-1 ; k>=0 && prePosition.length==0 ; k-- ){
-          List<Aes> possiblyPreGroup = value[k];
+          List<Aes> possiblyPreGroup = groups[k];
           for( Aes aes in possiblyPreGroup ){
             if( aes.position[0].dx == position[0].dx ){
               prePosition = aes.position;
@@ -63,17 +59,5 @@ class StackGeomModifier extends GeomModifier {
         }
       }
     }
-  }
-}
-
-/// The stack geometory modifier operator.
-class StackGeomModifierOp extends GeomModifierOp<StackGeomModifier> {
-  StackGeomModifierOp(Map<String, dynamic> params) : super(params);
-
-  @override
-  StackGeomModifier evaluate() {
-    final origin = params['origin'] as Offset;
-
-    return StackGeomModifier(origin.dy);
   }
 }
