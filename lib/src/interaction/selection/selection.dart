@@ -172,6 +172,7 @@ class SelectorOp extends Operator<Map<String, Selector>?> {
           spec.toggle ?? false,
           spec.nearest ?? true,
           spec.testRadius ?? 10.0,
+          spec.bothDimTest,
           spec.dim,
           spec.variable,
           [gesture.localPosition],
