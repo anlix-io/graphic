@@ -20,7 +20,7 @@ import 'package:graphic/src/util/collection.dart';
 import 'package:graphic/src/variable/transform/transform.dart';
 import 'package:graphic/src/variable/variable.dart';
 
-import 'view.dart';
+import 'view.dart' as customView;
 
 /// A widget to display the chart.
 ///
@@ -187,7 +187,7 @@ class _ChartState<D> extends State<Chart<D>> {
   /// The view that controlls the data visualization.
   ///
   /// For a chart widget, to "rebuild" means to create a new [view].
-  View<D>? view;
+  customView.View<D>? view;
 
   /// Size of the chart widget.
   ///
@@ -224,9 +224,9 @@ class _ChartState<D> extends State<Chart<D>> {
 
     // The mouse enter and exit implementation is the same as Flutter's tooltip:
     // https://github.com/flutter/flutter/blob/master/packages/flutter/lib/src/material/tooltip.dart#L354
-    _mouseIsConnected = RendererBinding.instance!.mouseTracker.mouseIsConnected;
+    _mouseIsConnected = RendererBinding.instance.mouseTracker.mouseIsConnected;
 
-    RendererBinding.instance!.mouseTracker
+    RendererBinding.instance.mouseTracker
         .addListener(_handleMouseTrackerChange);
   }
 
@@ -234,7 +234,7 @@ class _ChartState<D> extends State<Chart<D>> {
   void dispose() {
     super.dispose();
 
-    RendererBinding.instance!.mouseTracker
+    RendererBinding.instance.mouseTracker
         .removeListener(_handleMouseTrackerChange);
   }
 
@@ -263,7 +263,7 @@ class _ChartState<D> extends State<Chart<D>> {
     }
 
     final mouseIsConnected =
-        RendererBinding.instance!.mouseTracker.mouseIsConnected;
+        RendererBinding.instance.mouseTracker.mouseIsConnected;
     if (mouseIsConnected != _mouseIsConnected) {
       setState(() {
         _mouseIsConnected = mouseIsConnected;
@@ -783,7 +783,7 @@ class _ChartLayoutDelegate<D> extends SingleChildLayoutDelegate {
       // to create a new view. A view is and only is created in _ChartLayoutDelegate.getPositionForChild
       // because it needs the current size.
 
-      state.view = View<D>(
+      state.view = customView.View<D>(
         state.widget,
         size,
         state.repaint,
